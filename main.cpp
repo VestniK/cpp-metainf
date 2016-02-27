@@ -18,6 +18,9 @@ struct User {
     int get_age() const {return age;}
     int& get_age() {return age;}
     void set_age(int val) {age = val;}
+
+    template<typename Str>
+    void set_name(Str&& str) {name = std::forward<Str>(str);}
 };
 template<>
 const char* member_info<User, std::string, &User::name>::name = "name";
@@ -29,6 +32,12 @@ template<>
 const char* member_info<User, int&(), &User::get_age>::name = "get_age";
 template<>
 const char* member_info<User, void(int), &User::set_age>::name = "set_age";
+
+// Can't have pointer to template member but can have pointer to instantion of template member
+template<>
+const char* member_info<User, void(const std::string&), &User::set_name>::name = "set_name";
+template<>
+const char* member_info<User, void(std::string&&), &User::set_name>::name = "set_name";
 
 template<typename T>
 struct Point {
@@ -47,6 +56,8 @@ int main() {
     std::cout << member_info<User, int() const, &User::get_age>::name << std::endl;
     std::cout << member_info<User, int&(), &User::get_age>::name << std::endl;
     std::cout << member_info<User, void(int), &User::set_age>::name << std::endl;
+    std::cout << member_info<User, void(const std::string&), &User::set_name>::name << std::endl;
+    std::cout << member_info<User, void(std::string&&), &User::set_name>::name << std::endl;
     std::cout << member_info<PointF, double, &PointF::x>::name << std::endl;
     return 0;
 }
