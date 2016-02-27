@@ -4,33 +4,36 @@
 template<typename C, typename T>
 using member_ptr = T C::*;
 
-namespace detail {
-
-template<typename C, typename T>
-struct member_info_base {
+template<typename C, typename T, member_ptr<C, T> M>
+struct member_info {
+    static const char* name;
     using type = T;
     using class_type = C;
 };
 
+struct User {
+    std::string name;
+    int age;
 };
+template<>
+const char* member_info<User, std::string, &User::name>::name = "name";
+template<>
+const char* member_info<User, int, &User::age>::name = "age";
 
-template<typename C, typename T, member_ptr<C, T> M>
-struct member_info;
-
+template<typename T>
 struct Point {
-    double x;
-    double y;
+    T x;
+    T y;
 };
+
+using PointF = Point<double>;
 template<>
-struct member_info<Point, double, &Point::x>: detail::member_info_base<Point, double> {
-    constexpr static const char* name = "x";
-};
+const char* member_info<PointF, double, &PointF::x>::name = "x";
 template<>
-struct member_info<Point, double, &Point::y>: detail::member_info_base<Point, double> {
-    constexpr static const char* name = "y";
-};
+const char* member_info<PointF, double, &PointF::y>::name = "y";
 
 int main() {
-    std::cout << member_info<Point, double, &Point::x>::name << std::endl;
+    std::cout << member_info<User, std::string, &User::name>::name << std::endl;
+    std::cout << member_info<PointF, double, &PointF::x>::name << std::endl;
     return 0;
 }
