@@ -8,17 +8,27 @@
 #include "reflect.h"
 #include "write.h"
 
-struct GeoPos {
-    double lon;
-    double lat;
+class GeoPos {
+public:
+    GeoPos(double lon, double lat): mLon(lon), mLat(lat) {}
+
+    double getLon() const {return mLon;}
+    void setLon(double val) {mLon = val;}
+
+    double getLat() const {return mLat;}
+    void setLat(double val) {mLat = val;}
+
+private:
+    double mLon;
+    double mLat;
 };
-template<>const char* member_info<GeoPos, double, &GeoPos::lon>::name = "lon";
-template<>const char* member_info<GeoPos, double, &GeoPos::lat>::name = "lat";
+template<>const char* const property_info<GeoPos, decltype(&GeoPos::getLon), &GeoPos::getLon, decltype(&GeoPos::setLon), &GeoPos::setLon>::name = "lon";
+template<>const char* const property_info<GeoPos, decltype(&GeoPos::getLat), &GeoPos::getLat, decltype(&GeoPos::setLat), &GeoPos::setLat>::name = "lat";
 template<>
 struct type_info<GeoPos>{
     using members = std::tuple<
-        member_info<GeoPos, double, &GeoPos::lon>,
-        member_info<GeoPos, double, &GeoPos::lat>
+        property_info<GeoPos, decltype(&GeoPos::getLon), &GeoPos::getLon, decltype(&GeoPos::setLon), &GeoPos::setLon>,
+        property_info<GeoPos, decltype(&GeoPos::getLat), &GeoPos::getLat, decltype(&GeoPos::setLat), &GeoPos::setLat>
     >;
 };
 
@@ -26,8 +36,8 @@ struct User {
     std::string name;
     GeoPos location;
 };
-template<>const char* member_info<User, std::string, &User::name>::name = "name";
-template<>const char* member_info<User, GeoPos, &User::location>::name = "location";
+template<>const char* const member_info<User, std::string, &User::name>::name = "name";
+template<>const char* const member_info<User, GeoPos, &User::location>::name = "location";
 template<>
 struct type_info<User>{
     using members = std::tuple<

@@ -4,16 +4,27 @@
 
 #include "utils.h"
 
-template<typename C, typename T>
+template<class C, typename T>
 using member_ptr = T C::*;
 
-template<typename C, typename T, member_ptr<C, T> M>
+template<class C, typename T, member_ptr<C, T> M>
 struct member_info {
-    static const char* name;
+    static const char* const name;
     static const T& get(const C& c) {return (c.*M);}
     template<typename U>
     static void set(C& c, U&& val) {(c.*M) = std::forward<U>(val);}
 };
+
+template<class C, typename TGetter, TGetter Getter, typename TSetter, TSetter Setter>
+struct property_info {
+    // TODO: static asserts on TGetter and TSetter to check that they are getter and setter
+    // in a class C
+    static const char* const name;
+    static auto get(const C& c) -> decltype((c.*Getter)()) {return (c.*Getter)();}
+    template<typename U>
+    static void set(C& c, U&& val) {(c.*Setter)(std::forward<U>(val));}
+};
+
 template<typename T>
 struct type_info;
 
