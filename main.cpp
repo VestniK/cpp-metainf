@@ -22,13 +22,13 @@ private:
     double mLon;
     double mLat;
 };
-template<>const char* const property_info<GeoPos, decltype(&GeoPos::getLon), &GeoPos::getLon, decltype(&GeoPos::setLon), &GeoPos::setLon>::name = "lon";
-template<>const char* const property_info<GeoPos, decltype(&GeoPos::getLat), &GeoPos::getLat, decltype(&GeoPos::setLat), &GeoPos::setLat>::name = "lat";
+template<>const char* const property_info<decltype(&GeoPos::getLon), &GeoPos::getLon, decltype(&GeoPos::setLon), &GeoPos::setLon>::name = "lon";
+template<>const char* const property_info<decltype(&GeoPos::getLat), &GeoPos::getLat, decltype(&GeoPos::setLat), &GeoPos::setLat>::name = "lat";
 template<>
 struct type_info<GeoPos>{
     using members = std::tuple<
-        property_info<GeoPos, decltype(&GeoPos::getLon), &GeoPos::getLon, decltype(&GeoPos::setLon), &GeoPos::setLon>,
-        property_info<GeoPos, decltype(&GeoPos::getLat), &GeoPos::getLat, decltype(&GeoPos::setLat), &GeoPos::setLat>
+        property_info<decltype(&GeoPos::getLon), &GeoPos::getLon, decltype(&GeoPos::setLon), &GeoPos::setLon>,
+        property_info<decltype(&GeoPos::getLat), &GeoPos::getLat, decltype(&GeoPos::setLat), &GeoPos::setLat>
     >;
 };
 
