@@ -1,12 +1,16 @@
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
 
-#include "utils.h"
+#include "metainf.h"
 #include "reflect.h"
+#include "utils.h"
 #include "write.h"
+
+using namespace std::literals;
 
 class GeoPos {
 public:
@@ -36,15 +40,27 @@ struct User {
     std::string name;
     GeoPos location;
 };
-template<>const char* const member_info<User, std::string, &User::name>::name = "name";
-template<>const char* const member_info<User, GeoPos, &User::location>::name = "location";
+template<>const char* const member_info<decltype(&User::name), &User::name>::name = "name";
+template<>const char* const member_info<decltype(&User::location), &User::location>::name = "location";
 template<>
 struct type_info<User>{
     using members = std::tuple<
-        member_info<User, std::string, &User::name>,
-        member_info<User, GeoPos, &User::location>
+        member_info<decltype(&User::name), &User::name>,
+        member_info<decltype(&User::location), &User::location>
     >;
 };
+
+struct timeout {
+    using type = std::chrono::milliseconds;
+};
+
+class Service {
+public:
+    void foo() {std::cout << "foo";}
+    void bar() {std::cout << "bar";}
+};
+template<>const timeout::type member_metainf<timeout, decltype(&Service::foo), &Service::foo>::value = 1min;
+template<>const timeout::type member_metainf<timeout, decltype(&Service::bar), &Service::bar>::value = 30s;
 
 int main() {
     User vasya = {"vasya", GeoPos{54.0, 85.0}};

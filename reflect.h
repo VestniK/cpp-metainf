@@ -3,17 +3,24 @@
 #include <type_traits>
 
 #include "getter.h"
+#include "member.h"
 #include "setter.h"
 #include "utils.h"
 
 // Members and properties info
 
-template<class C, typename T, member_ptr<C, T> M>
+template<class TM, Member<TM> M>
 struct member_info {
     static const char* const name;
-    static const T& get(const C& c) {return (c.*M);}
+    static const typename member_trait<TM>::type& get(
+        const typename member_trait<TM>::class_type& c
+    ) {
+        return (c.*M);
+    }
     template<typename U>
-    static void set(C& c, U&& val) {(c.*M) = std::forward<U>(val);}
+    static void set(typename member_trait<TM>::class_type& c, U&& val) {
+        (c.*M) = std::forward<U>(val);
+    }
 };
 
 template<typename TG, Getter<TG> Getter, typename TS, Setter<TS> Setter>
@@ -33,7 +40,9 @@ struct property_info {
         return (c.*Getter)();
     }
     template<typename U>
-    static void set(typename setter_trait<TS>::class_type& c, U&& val) {(c.*Setter)(std::forward<U>(val));}
+    static void set(typename setter_trait<TS>::class_type& c, U&& val) {
+        (c.*Setter)(std::forward<U>(val));
+    }
 };
 
 template<typename T>
