@@ -1,4 +1,3 @@
-#include <chrono>
 #include <iostream>
 #include <string>
 #include <tuple>
@@ -9,8 +8,6 @@
 #include "reflect.h"
 #include "utils.h"
 #include "write.h"
-
-using namespace std::literals;
 
 class GeoPos {
 public:
@@ -49,18 +46,6 @@ struct type_info<User>{
         member_info<decltype(&User::location), &User::location>
     >;
 };
-
-struct timeout {
-    using type = std::chrono::milliseconds;
-};
-
-class Service {
-public:
-    void foo() {std::cout << "foo";}
-    void bar() {std::cout << "bar";}
-};
-template<>const timeout::type member_metainf<timeout, decltype(&Service::foo), &Service::foo>::value = 1min;
-template<>const timeout::type member_metainf<timeout, decltype(&Service::bar), &Service::bar>::value = 30s;
 
 int main() {
     User vasya = {"vasya", GeoPos{54.0, 85.0}};
